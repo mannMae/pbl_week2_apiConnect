@@ -46,7 +46,6 @@ const getLikeAxios = (postId) => {
 
 const addLikeAxios = (postId) =>{
     return function (dispatch, getState, { history }) {
-        console.log(postId)
 
         const _user = getState().user.user;
         console.log(_user);
@@ -55,20 +54,23 @@ const addLikeAxios = (postId) =>{
             access_token : _user.access_token,
             refresh_token : _user.refresh_token,
         };
-
+        const postData = {
+            postId:postId
+        }
+        console.log(postData)
         instance
-            .get(
-                `api/post/like`,
+            .post(
+                `/api/post/like`, postData,
                 {
                     headers:{
                         ACCESS_TOKEN:user_info.access_token,
                         REFRESH_TOKEN:user_info.refresh_token,
                     },
+                    withCredentials: true
                 },
-                { withCredentials: true}
             )
             .then((docs) => {
-                console.log(docs);
+                console.log(postId);
                 dispatch(addLike(postId));
             })
             .catch((err) => {
@@ -88,9 +90,13 @@ const cancelLikeAxios = (postId) =>{
             refresh_token : _user.refresh_token,
         };
 
+        const postData = {
+            postId:postId
+        }
+
         instance
-            .get(
-                `api/post/like`,
+            .post(
+                `api/post/like`, postData,
                 {
                     headers:{
                         ACCESS_TOKEN:user_info.access_token,
@@ -116,11 +122,11 @@ export default handleActions(
             }),
         [ADD_LIKE] : (state, action) =>
             produce(state, (draft) => {
-                draft.list.push(...action.payload.post_list);
+                draft.postId = action.payload.postId
             }),
         [CANCEL_LIKE] : (state, action) => 
             produce(state, (draft) => {
-
+                draft.postId = action.payload.postId
             }),
     },
     initialState

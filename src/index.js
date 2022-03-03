@@ -1,7 +1,9 @@
 import './index.css';
-import React from 'react';
+import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux'
+
+import Spinner from "./elements/Spinner";
 
 import store from "./redux/configureStore";
 import App from './shared/App';
@@ -9,7 +11,9 @@ import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
   <Provider store={store}>
-    <App />
+    <Suspense fallback={<Spinner/>}>
+      <App />
+    </Suspense>
   </Provider>,
   document.getElementById('root')
 );

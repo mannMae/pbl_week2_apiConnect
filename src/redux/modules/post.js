@@ -14,7 +14,7 @@ const UPDATE_POST = "UPDATE_POST";
 const DELETE_POST = "DELETE_POST";
 const LOADING = "LOADING";
 
-const getPost = createAction(GET_POST, (post_list,paging) =>({
+export const getPost = createAction(GET_POST, (post_list,paging) =>({
     post_list,
     paging,
 }));
@@ -39,8 +39,43 @@ const initialPost = {
     image: "testUrl_admin",
 };
 
-const getPostAxios = (start=null, size = 3) =>{
+const getPostAxios = (count, size = 3) =>{
     return function (dispatch, getState, { history }){
+        const _user = getState().user.user;
+
+        const postData = {
+        }
+
+        if(_user){
+            console.log("hihi")
+            const user_info = {
+                username: _user.username,
+                access_token : _user.access_token,
+                refresh_token : _user.refresh_token,
+            };
+                let _paging = getState().post.paging;
+                if (_paging.start&&!_paging.next){
+                    return;
+                }
+                dispatch(loading(true));
+                instance
+                    .get("api/post",
+                        {   
+                            headers: {
+                                PAGING_CNT:count,
+                                ACCESS_TOKEN:user_info.access_token,
+                                REFRESH_TOKEN:user_info.refresh_token,
+                            },
+                        },
+                        { withCredentials:true}
+                    )
+                    .then((res) =>{
+                        console.log(res)
+                        dispatch(getPost(res.data, false));
+                    })
+                    .catch((err) => console.log("getPostAxios :::", err.message))
+        }
+
         let _paging = getState().post.paging;
         if (_paging.start&&!_paging.next){
             return;
@@ -50,7 +85,9 @@ const getPostAxios = (start=null, size = 3) =>{
             .get("api/post",
                 {   
                     headers: {
-                        Authorization : `Bearer ${token}`,
+                        PAGING_CNT:count,
+                        ACCESS_TOKEN:null,
+                        REFRESH_TOKEN:null,
                     },
                 },
                 { withCredentials:true}

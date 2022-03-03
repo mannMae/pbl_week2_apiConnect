@@ -17,11 +17,7 @@ const Post = (props) =>{
 
     const today = (moment().format());
     const createdAt = moment(props.createdAt).hours();
-    console.log(today)
-    console.log(createdAt)
     const timeDiff = Math.abs(moment(today).hours() - createdAt);
-    console.log(timeDiff)
-    console.log(props)
 
     return (
         <>
@@ -81,7 +77,7 @@ const Post = (props) =>{
                     )} */}
                 </Grid>
                 <Grid is_flex padding="5px 16px">
-                    <Like postId={props.postId} likeCount={props.likeCount} ></Like>
+                    <Like postId={props.postId} likeCount={props.likeCount} liked={props.liked} ></Like>
                 </Grid>
             </PostBox>
         </>
